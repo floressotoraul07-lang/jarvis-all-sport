@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="admin-header">
+    <h2>Panel de Administración</h2>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <a class="btn btn-wsp" href="{{ url_for('compartir_catalogo') }}" target="_blank">
+            💬 Compartir catálogo por WhatsApp
+        </a>
+        <a class="btn" href="{{ url_for('catalogo_pdf') }}">
+            📄 Descargar PDF
+        </a>
+        <a class="btn" href="{{ url_for('agregar_sneaker') }}">
+            + Agregar zapatilla
+        </a>
+    </div>
+</div>
+
+<div class="filtros">
+    <a href="{{ url_for('admin_dashboard') }}" class="chip {{ 'activo' if not marca_activa else '' }}">Todas</a>
+    {% for m in marcas %}
+        <a href="{{ url_for('admin_dashboard', marca=m) }}" class="chip {{ 'activo' if marca_activa == m else '' }}">{{ m }}</a>
+    {% endfor %}
+</div>
+
+<table class="tabla">
+    <thead>
+        <tr><th>Imagen</th><th>Marca</th><th>Nombre</th><th>Código</th><th>Precio</th><th>Acciones</th></tr>
+    </thead>
+    <tbody>
+        {% for s in sneakers %}
+        <tr>
+            <td>{% if s.imagen_url %}<img src="{{ url_for('static', filename=s.imagen_url) }}" width="60">{% else %}—{% endif %}</td>
+            <td><span class="marca-tag">{{ s.marca }}</span></td>
+            <td>{{ s.nombre }}</td>
+            <td>{{ s.codigo or '—' }}</td>
+            <td>S/ {{ "%.2f"|format(s.precio) }}</td>
+            <td>
+                <a class="btn" href="{{ url_for('editar_sneaker', sneaker_id=s.id) }}">Editar</a>
+                <form method="POST" action="{{ url_for('eliminar_sneaker', sneaker_id=s.id) }}" style="display:inline;">
+                    <button class="btn btn-peligro" onclick="return confirm('¿Eliminar?')">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

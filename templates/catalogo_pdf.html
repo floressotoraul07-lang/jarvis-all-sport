@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        h1 { text-align: center; color: #16a34a; font-size: 28px; }
+        .subtitulo { text-align: center; color: #666; margin-bottom: 20px; }
+        .marca-titulo {
+            background: #0f172a;
+            color: #22c55e;
+            padding: 10px 15px;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0 10px;
+            border-radius: 6px;
+        }
+        .producto {
+            display: flex;
+            gap: 15px;
+            border-bottom: 1px solid #ddd;
+            padding: 15px 0;
+            page-break-inside: avoid;
+        }
+        .producto img { width: 120px; height: 120px; object-fit: cover; border-radius: 8px; }
+        .producto-info h3 { margin: 0 0 5px; color: #0f172a; }
+        .producto-info .codigo { font-size: 12px; color: #666; }
+        .producto-info .tallas { font-size: 12px; color: #333; margin-top: 5px; }
+        .precio { font-size: 18px; font-weight: bold; color: #16a34a; }
+        .tachado { text-decoration: line-through; color: #999; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <h1>CATÁLOGO {{ año }}</h1>
+    <p class="subtitulo">JARVIS ALL SPORT — La tienda #1 en toda la selva</p>
+
+    {% for marca, productos in marcas.items() %}
+    <div class="marca-titulo">{{ marca|upper }}</div>
+    {% for s in productos %}
+    <div class="producto">
+        {% if s.imagen_url %}
+        <img src="file:///{{ base_path }}/static/{{ s.imagen_url }}">
+        {% endif %}
+        <div class="producto-info">
+            <h3>{{ s.nombre }}</h3>
+            {% if s.codigo %}<p class="codigo">Cód: {{ s.codigo }}</p>{% endif %}
+            <p class="codigo">Género: {{ s.genero }}</p>
+            <p class="tallas">
+                <strong>Tallas:</strong>
+                {% for inv in s.inventarios %}{{ inv.size.numero }}{% if not loop.last %}, {% endif %}{% endfor %}
+            </p>
+            <p class="precio">
+                {% if s.precio_oferta %}<span class="tachado">S/ {{ "%.2f"|format(s.precio_oferta) }}</span>{% endif %}
+                S/ {{ "%.2f"|format(s.precio) }}
+            </p>
+        </div>
+    </div>
+    {% endfor %}
+    {% endfor %}
+
+    <p style="text-align:center; margin-top: 40px; color: #666;">
+        📞 Pide el tuyo al WhatsApp: +{{ whatsapp }}
+    </p>
+</body>
+</html>

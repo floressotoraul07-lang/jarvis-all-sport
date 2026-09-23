@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="hero">
+    <div class="hero-contenido">
+        <h1>¡BIENVENIDO A<br><span>JARVIS ALL SPORT</span></h1>
+        <p class="lema">⭐ La tienda número #1 en toda la selva ⭐</p>
+        <p class="subtitulo">Las mejores marcas: Nike · Adidas · Puma · Lacoste · Jordan · Fila</p>
+        <div class="hero-botones">
+            <a href="{{ url_for('catalogo') }}" class="btn btn-grande">Ver Catálogo Completo</a>
+            <a href="{{ url_for('catalogo', categoria='Niño') }}" class="btn btn-grande btn-secundario">👶 Zapatillas de Niños</a>
+        </div>
+    </div>
+</section>
+
+<section class="marcas-destacadas">
+    <h2>Nuestras Marcas</h2>
+    <div class="marcas-grid">
+        <a href="{{ url_for('catalogo', marca='Nike') }}" class="marca-card">Nike</a>
+        <a href="{{ url_for('catalogo', marca='Adidas') }}" class="marca-card">Adidas</a>
+        <a href="{{ url_for('catalogo', marca='Puma') }}" class="marca-card">Puma</a>
+        <a href="{{ url_for('catalogo', marca='Lacoste') }}" class="marca-card">Lacoste</a>
+        <a href="{{ url_for('catalogo', marca='Jordan') }}" class="marca-card">Jordan</a>
+        <a href="{{ url_for('catalogo', marca='Fila') }}" class="marca-card">Fila</a>
+    </div>
+</section>
+{% endblock %}

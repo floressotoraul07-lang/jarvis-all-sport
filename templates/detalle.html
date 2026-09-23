@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}{{ sneaker.nombre }} — JARVIS ALL SPORT{% endblock %}
+{% block content %}
+
+<div class="detalle">
+    <div class="detalle-imagen">
+        {% if sneaker.imagen_url %}
+            <img src="{{ url_for('static', filename=sneaker.imagen_url) }}" alt="{{ sneaker.nombre }}">
+        {% else %}
+            <div class="sin-imagen grande">Sin imagen</div>
+        {% endif %}
+    </div>
+    <div class="detalle-info">
+        <span class="marca-tag grande">{{ sneaker.marca }}</span>
+        <h1>{{ sneaker.nombre }}</h1>
+        {% if sneaker.codigo %}<p class="codigo">Código: {{ sneaker.codigo }}</p>{% endif %}
+        <p class="genero">Género: {{ sneaker.genero }}</p>
+
+        <div class="precios">
+            {% if sneaker.precio_oferta %}
+                <span class="precio-tachado grande">S/ {{ "%.2f"|format(sneaker.precio_oferta) }}</span>
+            {% endif %}
+            <span class="precio grande">S/ {{ "%.2f"|format(sneaker.precio) }}</span>
+        </div>
+
+        {% if sneaker.descripcion %}<p class="descripcion">{{ sneaker.descripcion }}</p>{% endif %}
+
+        <h3>Tallas disponibles</h3>
+        <div class="tallas-grid">
+            {% for inv in inventarios %}
+            <div class="talla-item {{ 'agotado' if inv.cantidad == 0 else '' }}">
+                <strong>{{ inv.size.numero }}</strong>
+                <span>{% if inv.cantidad > 0 %}{{ inv.cantidad }} disp.{% else %}Agotado{% endif %}</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="detalle-botones">
+            <a href="https://wa.me/{{ whatsapp }}?text={{ mensaje_url }}" target="_blank" class="btn btn-wsp btn-grande">💬 Consultar por WhatsApp</a>
+            <a href="{{ url_for('catalogo') }}" class="btn btn-secundario">← Volver al catálogo</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

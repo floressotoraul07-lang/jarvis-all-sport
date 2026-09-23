@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Catálogo — JARVIS ALL SPORT{% endblock %}
+{% block content %}
+
+<div class="banner-catalogo">
+    <h1>CATÁLOGO 2026</h1>
+    <p>JARVIS ALL SPORT</p>
+</div>
+
+<div class="filtros">
+    <a href="{{ url_for('catalogo') }}" class="chip {{ 'activo' if not marca_activa and not categoria_activa else '' }}">Todas</a>
+    <a href="{{ url_for('catalogo', categoria='Niño') }}" class="chip {{ 'activo' if categoria_activa == 'Niño' else '' }}">👶 Niños</a>
+    {% for m in marcas %}
+        <a href="{{ url_for('catalogo', marca=m) }}" class="chip {{ 'activo' if marca_activa == m else '' }}">{{ m }}</a>
+    {% endfor %}
+</div>
+
+{% if sneakers %}
+<div class="grid">
+    {% for s in sneakers %}
+    <div class="card">
+        <div class="card-imagen">
+            {% if s.imagen_url %}
+                <img src="{{ url_for('static', filename=s.imagen_url) }}" alt="{{ s.nombre }}">
+            {% else %}
+                <div class="sin-imagen">Sin imagen</div>
+            {% endif %}
+            {% if s.precio_oferta %}
+                <span class="etiqueta-oferta">OFERTA</span>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <span class="marca-tag">{{ s.marca }}</span>
+            {% if s.codigo %}<span class="codigo">Cód: {{ s.codigo }}</span>{% endif %}
+            <h3>{{ s.nombre }}</h3>
+            <p class="genero">Género: {{ s.genero }}</p>
+            <p class="tallas-info">
+                <strong>Tallas:</strong>
+                {% for inv in s.inventarios|sort(attribute='size.numero') %}
+                    {{ inv.size.numero }}{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            <div class="precios">
+                {% if s.precio_oferta %}
+                    <span class="precio-tachado">S/ {{ "%.2f"|format(s.precio_oferta) }}</span>
+                {% endif %}
+                <span class="precio">S/ {{ "%.2f"|format(s.precio) }}</span>
+            </div>
+            <div class="card-acciones">
+                <a href="{{ url_for('detalle', sneaker_id=s.id) }}" class="btn">Ver detalles</a>
+                {% set msg = 'Hola JARVIS ALL SPORT, me interesa: ' ~ s.marca ~ ' ' ~ s.nombre ~ (' (Cód. ' ~ s.codigo ~ ')' if s.codigo else '') %}
+                <a href="https://wa.me/{{ whatsapp }}?text={{ msg|urlencode }}"
+                   target="_blank" class="btn btn-wsp">💬 WhatsApp</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p class="vacio">No hay zapatillas en esta categoría todavía.</p>
+{% endif %}
+
+{% set msg_catalogo = 'Hola JARVIS ALL SPORT, quiero ver su catálogo completo' %}
+<a href="https://wa.me/{{ whatsapp }}?text={{ msg_catalogo|urlencode }}"
+   target="_blank" class="wsp-flotante">💬</a>
+{% endblock %}
