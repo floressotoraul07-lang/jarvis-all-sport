@@ -2,13 +2,16 @@ from flask import Flask
 from models import db
 import os
 
+# Importamos la herramienta de seguridad
+from flask_login import LoginManager
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 app = Flask(__name__,
             template_folder=os.path.join(BASE_DIR, 'templates'),
             static_folder=os.path.join(BASE_DIR, 'static'))
 
-app.config['SECRET_KEY'] = 'clave-secreta-cambiala'
+app.config['SECRET_KEY'] = 'clave-super-secreta-cambiala-por-favor'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'instance', 'tienda.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -20,6 +23,25 @@ app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 
 db.init_app(app)
 
+# ============================================================
+# CONFIGURACIÓN DE SEGURIDAD (LOGIN)
+# ============================================================
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login' # Si alguien intenta entrar al admin sin permiso, lo manda aquí
+login_manager.login_message = 'Debes iniciar sesión para entrar al panel.'
+
+from auth import get_user
+
+@login_manager.user_loader
+def load_user(user_id):
+    # Busca al usuario en auth.py
+    for user in get_user.__globals__['USERS'].values():
+        if str(user.id) == str(user_id):
+            return user
+    return None
+# ============================================================
+
 from views import *
 
 if __name__ == '__main__':
@@ -27,34 +49,4 @@ if __name__ == '__main__':
         db.create_all()
         print("Base de datos lista")
     app.run(debug=True)
-    from flask import make_response
-from datetime import datetime as dt
 
-@app.route('/admin/catalogo-pdf')
-def catalogo_pdf():
-    """Genera el catálogo en PDF para descargar y compartir."""
-    sneakers = Sneaker.query.order_by(Sneaker.marca, Sneaker.nombre).all()
-
-    marcas_dict = {}
-    for s in sneakers:
-        marcas_dict.setdefault(s.marca or 'Otras', []).append(s)
-
-    html = render_template(
-        'catalogo_pdf.html',
-        marcas=marcas_dict,
-        año=dt.now().year,
-        whatsapp=WHATSAPP_NUMERO,
-        base_path=app.config.get('BASE_DIR', os.getcwd()).replace('\\', '/')
-    )
-
-    try:
-        from weasyprint import HTML
-        pdf = HTML(string=html, base_url=request.url_root).write_pdf()
-
-        response = make_response(pdf)
-        response.headers['Content-Type'] = 'application/pdf'
-        response.headers['Content-Disposition'] = f'attachment; filename=catalogo-{dt.now().strftime("%Y%m%d")}.pdf'
-        return response
-    except ImportError:
-        flash('WeasyPrint no está instalado. Ejecuta: pip install weasyprint', 'error')
-        return redirect(url_for('admin_dashboard'))

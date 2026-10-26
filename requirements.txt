@@ -1,3 +1,6 @@
 Flask
 Flask-SQLAlchemy
 gunicorn
+openpyxl
+fpdf2
+flask-login

@@ -7,14 +7,14 @@ db = SQLAlchemy()
 class Sneaker(db.Model):
     __tablename__ = 'sneaker'
     id = db.Column(db.Integer, primary_key=True)
-    codigo = db.Column(db.String(50), nullable=True)          # Ej: 750SMA0077APE
+    codigo = db.Column(db.String(50), nullable=True)
     nombre = db.Column(db.String(100), nullable=False)
-    marca = db.Column(db.String(50), nullable=False)           # Nike, Adidas, Puma...
-    genero = db.Column(db.String(20), default='Caballero')     # Caballero, Dama, Niño
-    categoria = db.Column(db.String(20), default='Adulto')     # Adulto, Niño
+    marca = db.Column(db.String(50), nullable=True)
+    categoria = db.Column(db.String(30), nullable=True)
+    genero = db.Column(db.String(30), nullable=True)
     descripcion = db.Column(db.Text, nullable=True)
     precio = db.Column(db.Float, nullable=False)
-    precio_oferta = db.Column(db.Float, nullable=True)         # Precio tachado (opcional)
+    precio_oferta = db.Column(db.Float, nullable=True)
     imagen_url = db.Column(db.String(200), nullable=True)
     fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
     inventarios = db.relationship('Inventory', backref='sneaker', lazy=True, cascade="all, delete-orphan")
@@ -23,7 +23,7 @@ class Sneaker(db.Model):
 class Size(db.Model):
     __tablename__ = 'size'
     id = db.Column(db.Integer, primary_key=True)
-    numero = db.Column(db.String(10), unique=True, nullable=False)  # "39.5", "40", "41"
+    numero = db.Column(db.String(10), unique=True, nullable=False)
     inventarios = db.relationship('Inventory', backref='size', lazy=True, cascade="all, delete-orphan")
 
 
